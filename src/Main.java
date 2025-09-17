@@ -1,7 +1,7 @@
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Валентин"); // Вывод строки "Валя" в консоль
+        System.out.println("Валентин"); // Вывод строки "Валентин" в консоль
         System.out.println(456); // Вывод числа 456 в консоль
 
         // Переменные и примитивные типы данных
@@ -16,10 +16,11 @@ public class Main {
         // Математические операции
         System.out.println(2 + 2); // Сложение
         System.out.println(100 - 50); // Вычетание
-        System.out.println(54356 * 8546); // Умножение
+        System.out.println(12 * 16); // Умножение
         System.out.println(4 / 2); // Деление
 
-        System.out.println(abc_char);
+        // Вывеод значения переменной в консоль
+        System.out.println(abc);
 
     }
 }
