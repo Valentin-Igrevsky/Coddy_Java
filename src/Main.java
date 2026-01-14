@@ -4,28 +4,41 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        System.out.println("===== Задание 1. Переменные и ввод данных через консоль =====");
+        task_1();
 
-        // ===== Задание 10. Enum =====
-        System.out.print("Введите состояние игры (MENU, PLAYING, GAME_OVER): ");
-        String stateInput = scanner.next();
-        GameState state = GameState.valueOf(stateInput);
-
-        switch (state) {
-            case MENU:
-                System.out.println("Главное меню");
-                break;
-            case PLAYING:
-                System.out.println("Игра идет");
-                break;
-            case GAME_OVER:
-                System.out.println("Игра окончена");
-                break;
+        System.out.println("\n===== Задание 2. if-else =====");
+        int[] hps = {100, 81, 80, 79, 60, 51, 50, 49, 30, 0};
+        for (int i = 0; i < hps.length; i++) {
+            System.out.print("Значние: " + hps[i] + "; Сообщение: ");
+            task_2(hps[i]);
         }
 
-        scanner.close();
+        System.out.println("\n===== Задание 3. switch-case =====");
+        for (int i = 0; i < 5; i++) {
+            System.out.print("Значние: " + i + "; Сообщение: ");
+            task_3(i);
+        }
+
+        System.out.println("\n===== Задания 4 и 5. Одномерный массив и цикл for =====");
+        task_45();
+
+        System.out.println("\n===== Задания 6 и 7. Двумерный массив и вложенные циклы for =====");
+        task_67();
+
+        System.out.println("\n===== Задание 8. Цикл while и операторы continue и break =====");
+        task_8();
+
+        System.out.println("\n===== Задания 9 и 10. Классы и интерфейсы =====");
+        task_910();
+
+        System.out.println("\n===== Задание 11. Enum =====");
+        for (GameState state : GameState.values()) {
+            System.out.print(state + " ");
+        }
     }
 
-    // ===== Задание 1. Переменные =====
+    // ===== Задание 1. Переменные и ввод данных через консоль =====
     static void task_1() {
         System.out.print("Введите имя игрока: ");
 
@@ -36,19 +49,18 @@ public class Main {
         String playerName = scanner.nextLine();
 
         // Пункт 2
-        // Создайте целочисленные переменные health и score. Запишите любые значения в созданные переменные
+        // Создайте целочисленную переменную health, дробную переменную score, булеву переменную gameOver.
+        // Запишите любые значения (для health и score отличные от нуля) в созданные переменные
 
         int health = 100;
-        int score = 0;
+        float score = 3.14f;
+        boolean gameOver = false;
 
-        System.out.println("Имя игрока: " + playerName + "\nЗдоровье: " + health + "\nСчет: " + score);
+        System.out.println("Имя игрока: " + playerName + "\nЗдоровье: " + health + "\nСчет: " + score + "\nИгра окончена: " + gameOver);
     }
 
     // ===== Задание 2. if-else =====
-    static void task_2() {
-        System.out.print("Введите здоровье игрока: ");
-        int health = scanner.nextInt();
-
+    static void task_2(int health) {
         // Напишите конструкцию if - else if - else:
         // Если значение переменной health больше или равно 80, вывести в консоль: "Игрок в отличной форме"
         // Ичане если значение переменной health больше или равно 50 и меньше 80, вывести в консоль: "Игрок в норме"
@@ -65,10 +77,7 @@ public class Main {
     }
 
     // ===== Задание 3. switch-case =====
-    static void task_3() {
-        System.out.print("Введите номер уровня (1-3): ");
-        int level = scanner.nextInt();
-
+    static void task_3(int level) {
         // Напишите конструкцию switch-case, где проверяется значение переменной level:
         // Проверяемые значения: 1, 2, 3
         // При срабатывании одного из случаев должно вывестись уникальное сообщение в консоль (например, название уровня)
@@ -90,10 +99,10 @@ public class Main {
         }
     }
 
-    // ===== Задание 4. Одномерный массив и цикл for =====
-    static void task_4() {
+    // ===== Задания 4 и 5. Одномерный массив и цикл for =====
+    static void task_45() {
+        // Задание 4
         // Создайте одномерный массив mas для 5 дробных чисел (float)
-
         float[] mas = new float[5];
 
         mas[0] = 3.141592653f;
@@ -102,11 +111,11 @@ public class Main {
         mas[3] = 0;
         mas[4] = 6.62607015f;
 
+        // Задание 5
         // Напишите цикл for, который "пройдется" по всем элементам массива mas и выведет их в консоль
         // Если какой-то элемент массива будет равен нулю необходимо пропусть его и не выводить в консоль
         // Подсказка: необходимо использовать оператор continue
 
-        System.out.println("Введите 5 значений очков:");
         for (int i = 0; i < 5; i++) {
             if (mas[i] == 0) {
                 continue;
@@ -115,12 +124,15 @@ public class Main {
         }
     }
 
-    // ===== Задание 5. Двумерный массив и вложенные циклы for =====
-    static void task_5() {
+    // ===== Задания 6 и 7. Двумерный массив и вложенные циклы for =====
+    static void task_67() {
+        // Задание 6
         // Создайте двумерный массив целочисленных значений размером 3x3 (т.е. 3 массива по 3 элемента в каждом) и заполните значения, используя фигурные скобки { }
         int[][] field = {{1,2,3}, {4,5,6}, {7,8,9}};
 
+        // Задание 5
         // С помощью вложенных циклов for выведите все элементы массива
+        // Подсказка: вложенные циклы - это один цикл внутри другого
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 System.out.println(field[i][j]);
@@ -128,8 +140,8 @@ public class Main {
         }
     }
 
-    // ===== Задание 6. Цикл while и операторы continue и break =====
-    static void task_6() {
+    // ===== Задание 8. Цикл while и операторы continue и break =====
+    static void task_8() {
         int[] mas = {43, 54, -12, 34, -120, 38, 4387, 3, 0, -328, 32};
         int sum = 0;
         int i = 0;
@@ -139,6 +151,7 @@ public class Main {
         while (true) {
             // Если число отрицательное нужно перейти к следующей итерации цикла
             if (mas[i] < 0) {
+                i+=1;
                 continue;
             }
 
@@ -154,8 +167,10 @@ public class Main {
         System.out.println("Сумма положительных чисел: " + sum);
     }
 
-    // ===== Задание 7. Класс Player =====
-    void task_7() {
+    // ===== Задания 9 и 10. Классы и интерфейсы =====
+    static void task_910() {
+        // Задание 9
+        // Пункт 1
         /* За пределами класса Main необходимо написать класс Player.
         У игрока должно быть:
             1) Публичное поле имени (name)
@@ -167,16 +182,27 @@ public class Main {
             5) Публичный метод, который возвращает текущее значение здоровье
             6) Приватный метод, который устанавливает здоровье в MAX_HEALTH
         */
-        // Здесь создайте экземпляр класса Player
-        // Вызовите все возможные методы у созданного экземпляра класса
-        Player player = new Player("Valentin", 70);
-        player.get_health();
-        // Метод reset_health() вызвать нельзя, т.к. он приватный и его нельзя вызвать из другого класса
-    }
 
-// ===== Задание 10. Enum =====
+        // Пункт 1
+        // Здесь создайте экземпляр класса Player
+        Player player = new Player("Valentin", 70);
+
+        // Здесь вызовите все возможные методы у созданного экземпляра класса
+        player.get_health();
+
+        // Метод reset_health() вызвать нельзя, т.к. он приватный и его нельзя вызвать из другого класса
+
+        // Задание 10
+        /* По написанному классу напишите интерфейс Gamer вне класса Main */
+    }
 }
 
+// ===== Задание 11. Enum =====
+/* Напишите перечисление (enum) GameState
+Перечисление должно иметь 4 значения: WAITING, PLAY, PAUSE, GAME_OVER */
+enum GameState {WAITING, PLAY, PAUSE, GAME_OVER}
+
+// Класс Player тут
 class Player {
     // Публичное поле имени (name)
     private String name;
@@ -210,38 +236,8 @@ class Player {
     }
 }
 
-// ===== Задание 9. Интерфейс =====
-interface Attackable {
-    void attack();
-}
-
-// ===== Задание 8. Наследование + реализация интерфейса =====
-class Mage extends Player implements Attackable {
-    private int mana;
-
-    public Mage(String name, int health, int mana) {
-        super(name, health);
-        this.mana = mana;
-    }
-
-    public void castSpell() {
-        if (mana >= 10) {
-            mana -= 10;
-            System.out.println("Маг использовал заклинание. Мана: " + mana);
-        } else {
-            System.out.println("Недостаточно маны");
-        }
-    }
-
-    @Override
-    public void attack() {
-        System.out.println("Маг атакует магией!");
-    }
-}
-
-// ===== Задание 10. Enum =====
-enum GameState {
-    MENU,
-    PLAYING,
-    GAME_OVER
+// Интерфейс Gamer тут
+interface Gamer {
+    public int get_health();
+    private void reset_health() {}
 }
