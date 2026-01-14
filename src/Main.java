@@ -5,15 +5,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // ===== Задания 7–9. Классы, наследование, интерфейс =====
-        Mage mage = new Mage(playerName, health, 50);
-        mage.printInfo();
-        mage.attack();
-        mage.castSpell();
-        mage.takeDamage(20);
-        mage.heal(10);
-        mage.printInfo();
-
         // ===== Задание 10. Enum =====
         System.out.print("Введите состояние игры (MENU, PLAYING, GAME_OVER): ");
         String stateInput = scanner.next();
@@ -176,7 +167,14 @@ public class Main {
             5) Публичный метод, который возвращает текущее значение здоровье
             6) Приватный метод, который устанавливает здоровье в MAX_HEALTH
         */
+        // Здесь создайте экземпляр класса Player
+        // Вызовите все возможные методы у созданного экземпляра класса
+        Player player = new Player("Valentin", 70);
+        player.get_health();
+        // Метод reset_health() вызвать нельзя, т.к. он приватный и его нельзя вызвать из другого класса
     }
+
+// ===== Задание 10. Enum =====
 }
 
 class Player {
