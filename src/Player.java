@@ -104,6 +104,14 @@ class Player {
         }
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
     public void draw(Graphics2D g2d) {
         Color[][] sprite = SPRITES.get(currentFrame);
         for (int row = 0; row < sprite.length; row++) {

@@ -1,23 +1,50 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 class SpriteLoader {
-    public static ArrayList<Color[][]> loadSprites(String dir_path) {
+    public static ArrayList<Color[][]> loadSprites(String dirPath) {
         ArrayList<Color[][]> sprites = new ArrayList<>();
 
-        for(int i = 1; i <=4; i++) {
-            try (InputStream is = SpriteLoader.class.getResourceAsStream(dir_path + "/" + i + ".png")) {
-                BufferedImage image = ImageIO.read(is);
-                sprites.add(loadColors(image));
-            } catch (IOException e) {
-                e.printStackTrace();
+        try (InputStream is = SpriteLoader.class.getResourceAsStream("/" + dirPath + "/list.txt");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+
+            String fileName;
+
+            while ((fileName = reader.readLine()) != null) {
+                try (InputStream imgStream = SpriteLoader.class.getResourceAsStream("/" + dirPath + "/" + fileName)) {
+
+                    BufferedImage image = ImageIO.read(imgStream);
+                    sprites.add(loadColors(image));
+                }
             }
+
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
         }
+
         return sprites;
+    }
+
+    public static Color[][] loadSprite(String path) {
+        try (InputStream is = SpriteLoader.class.getResourceAsStream("/" + path)) {
+
+            if (is == null) {
+                throw new RuntimeException("Resource not found: " + path);
+            }
+
+            BufferedImage image = ImageIO.read(is);
+            return loadColors(image);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static Color[][] loadColors(BufferedImage image) {

@@ -4,27 +4,34 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-class Game extends JPanel implements KeyListener, ActionListener {
+class Game extends JPanel implements KeyListener, ActionListener, MouseListener {
     private Player player;
 
     private boolean leftPressed = false;
     private boolean rightPressed = false;
 
-    private final ArrayList<Rectangle> platforms = new ArrayList<>();
+    private int cameraX = 0;
+    private int cameraY = 0;
+
+    private final ArrayList<Platform> platforms = new ArrayList<>();
 
     public Game() {
         setPreferredSize(new Dimension(800, 600));
         setBackground(new Color(225, 149, 48));
         setFocusable(true);
         addKeyListener(this);
+        addMouseListener(this);
         player = new Player(100, 400);
 
-        platforms.add(new Rectangle(0, 500, 2000, 100));
-        platforms.add(new Rectangle(300, 420, 120, 20));
-        platforms.add(new Rectangle(500, 350, 120, 20));
-        platforms.add(new Rectangle(750, 300, 120, 20));
+        platforms.add(new Platform(0, 500, "platform/2.png"));
+        platforms.add(new Platform(300, 420, "platform/1.png"));
+        platforms.add(new Platform(500, 350, "platform/1.png"));
+        platforms.add(new Platform(750, 300, "platform/1.png"));
+        platforms.add(new Platform(800, 400, "platform/1.png"));
 
         Timer timer = new Timer(16, this);
         timer.setRepeats(true);
@@ -46,9 +53,12 @@ class Game extends JPanel implements KeyListener, ActionListener {
 
         player.update();
 
-        for (Rectangle platform : platforms) {
-            player.checkCollision(platform);
+        for (Platform platform : platforms) {
+            player.checkCollision(platform.getBounds());
         }
+
+        cameraX = (int) player.getX() - getWidth() / 2;
+        cameraY = (int) player.getY() - getHeight() / 2;
     }
 
     @Override
@@ -56,9 +66,11 @@ class Game extends JPanel implements KeyListener, ActionListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
+        g2d.translate(-cameraX, -cameraY);
+
         g2d.setColor(new Color(0, 0, 0));
-        for (Rectangle platform : platforms) {
-            g2d.fill(platform);
+        for (Platform platform : platforms) {
+            platform.draw(g2d);
         }
 
         player.draw(g2d);
@@ -82,6 +94,29 @@ class Game extends JPanel implements KeyListener, ActionListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
+    public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+
+            int worldX = e.getX() + cameraX;
+            int worldY = e.getY() + cameraY;
+
+            platforms.add(new Platform(worldX, worldY, "platform/1.png"));
+        }
     }
+
+    @Override
+    public void keyTyped(KeyEvent e) {}
+
+    @Override
+    public void mouseClicked(MouseEvent e) {}
+
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
+
 }
