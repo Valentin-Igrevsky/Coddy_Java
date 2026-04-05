@@ -8,16 +8,9 @@ class GameObject {
 
     protected Color[][] SPRITE;
 
-    protected CollisionLayer layer;
-
-    public GameObject(double x, double y, CollisionLayer layer) {
+    public GameObject(double x, double y) {
         this.x = x;
         this.y = y;
-        this.layer = layer;
-    }
-
-    public CollisionLayer getLayer() {
-        return layer;
     }
 
     public Rectangle getBounds() {
