@@ -1,10 +1,7 @@
 import java.awt.*;
 import java.util.ArrayList;
 
-class Player {
-    private double x;
-    private double y;
-
+class Player extends GameObject {
     private double velX;
     private double velY;
 
@@ -15,7 +12,7 @@ class Player {
 
     private boolean onGround = true;
 
-    private static final int PIXEL_SIZE = 4;
+    private int health = 100;
 
     private final ArrayList<Color[][]> SPRITES;
 
@@ -23,33 +20,39 @@ class Player {
     private int tickFrame = 0;
 
     public Player(double x, double y) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
         SPRITES = SpriteLoader.loadSprites("player");
+        SPRITE = SPRITES.getFirst();
     }
 
     public void applyGravity() {
         velY += gravity;
     }
 
-    public void update() {
-        x += velX;
-        y += velY;
-
+    private void updateAnimation() {
         if (velX != 0) {
             tickFrame++;
             if (tickFrame > 8) {
                 currentFrame = (currentFrame + 1) % SPRITES.size();
+                SPRITE = SPRITES.get(currentFrame);
                 tickFrame = 0;
             }
         } else {
             currentFrame = 0;
+            SPRITE = SPRITES.getFirst();
             tickFrame = 0;
         }
     }
 
+    public void update() {
+        x += velX;
+        y += velY;
+
+        updateAnimation();
+    }
+
     public void checkCollision(Rectangle platform) {
-        Color[][] firstSprite = SPRITES.get(0);
+        Color[][] firstSprite = SPRITES.getFirst();
 
         int width = firstSprite[0].length;
         int height = firstSprite.length;
@@ -112,19 +115,15 @@ class Player {
         return y;
     }
 
-    public void draw(Graphics2D g2d) {
-        Color[][] sprite = SPRITES.get(currentFrame);
-        for (int row = 0; row < sprite.length; row++) {
-            for (int col = 0; col < sprite[row].length; col++) {
-                if (sprite[row][col] != null) {
-                    g2d.setColor(sprite[row][col]);
-                    g2d.fillRect(
-                            (int) x + col * PIXEL_SIZE,
-                            (int) y + row * PIXEL_SIZE,
-                            PIXEL_SIZE,
-                            PIXEL_SIZE);
-                }
-            }
-        }
+    void damage(int damage) {
+        health -= damage;
+    }
+
+    void heal(int heal) {
+        health += heal;
+    }
+
+    int getHealth() {
+        return health;
     }
 }
