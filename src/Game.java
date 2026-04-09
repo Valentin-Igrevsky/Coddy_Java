@@ -45,8 +45,6 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
     }
 
     private void update() {
-        player.applyGravity();
-
         if (leftPressed) player.moveLeft();
         if (rightPressed) player.moveRight();
         if (!leftPressed && !rightPressed) player.stop();
@@ -54,7 +52,7 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
         player.update();
 
         for (Platform platform : platforms) {
-            player.checkCollision(platform.getBounds());
+                checkCollision(player, platform);
         }
 
         cameraX = (int) player.getX() - getWidth() / 2;
@@ -96,11 +94,13 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
+            player.damage(10);
+            System.out.println(player.getHealth());
+        }
 
-            int worldX = e.getX() + cameraX;
-            int worldY = e.getY() + cameraY;
-
-            platforms.add(new Platform(worldX, worldY, "platform/1.png"));
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            player.heal(10);
+            System.out.println(player.getHealth());
         }
     }
 
@@ -119,4 +119,29 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
     @Override
     public void mouseExited(MouseEvent e) {}
 
+    public <A extends PhysicsObject, B extends GameObject> void checkCollision(A first, B second) {
+        Rectangle firstBounds = first.getBounds();
+        Rectangle secondBounds = second.getBounds();
+
+        if (firstBounds.intersects(secondBounds)) {
+            Rectangle intersection = firstBounds.intersection(secondBounds);
+
+            if (intersection.height < intersection.width) {
+                if (first.y < second.y) {
+                    first.y -= intersection.height;
+                    first.onGround = true;
+                } else {
+                    first.y += intersection.height;
+                }
+                first.velY = 0;
+            } else {
+                if (first.x < second.x) {
+                    first.x -= intersection.width;
+                } else {
+                    first.x += intersection.width;
+                }
+                first.velX = 0;
+            }
+        }
+    }
 }

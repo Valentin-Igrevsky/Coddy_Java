@@ -1,16 +1,9 @@
 import java.awt.*;
 import java.util.ArrayList;
 
-class Player extends GameObject {
-    private double velX;
-    private double velY;
-
+class Player extends PhysicsObject {
     private final double jumpStrength = -12;
     private final double speedStrength = 4;
-
-    private final double gravity = 0.5;
-
-    private boolean onGround = true;
 
     private int health = 100;
 
@@ -23,10 +16,6 @@ class Player extends GameObject {
         super(x, y);
         SPRITES = SpriteLoader.loadSprites("player");
         SPRITE = SPRITES.getFirst();
-    }
-
-    public void applyGravity() {
-        velY += gravity;
     }
 
     private void updateAnimation() {
@@ -44,48 +33,12 @@ class Player extends GameObject {
         }
     }
 
+    @Override
     public void update() {
         x += velX;
+        velY += gravity;
         y += velY;
-
         updateAnimation();
-    }
-
-    public void checkCollision(Rectangle platform) {
-        Color[][] firstSprite = SPRITES.getFirst();
-
-        int width = firstSprite[0].length;
-        int height = firstSprite.length;
-
-        Rectangle playerBounds = new Rectangle(
-                (int) x,
-                (int) y,
-                width * PIXEL_SIZE,
-                height * PIXEL_SIZE
-        );
-
-        if (playerBounds.intersects(platform)) {
-            Rectangle intersection = playerBounds.intersection(platform);
-
-            if (intersection.height < intersection.width) {
-                // Выше платформы
-                if (y < platform.y) {
-                    y -= intersection.height;
-                    onGround = true;
-                } else { // Ниже платформы
-                    y += intersection.height;
-                }
-                velY = 0;
-            } else {
-                // Слева от платформы
-                if (x < platform.x) {
-                    x -= intersection.width;
-                } else { // Справа от платформы
-                    x += intersection.width;
-                }
-                velX = 0;
-            }
-        }
     }
 
     public void moveLeft() {
@@ -105,14 +58,6 @@ class Player extends GameObject {
             velY = jumpStrength;
             onGround = false;
         }
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
     }
 
     void damage(int damage) {
