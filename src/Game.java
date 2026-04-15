@@ -9,7 +9,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 class Game extends JPanel implements KeyListener, ActionListener, MouseListener {
-    private Player player;
+    private final Player player;
 
     private boolean leftPressed = false;
     private boolean rightPressed = false;
@@ -18,6 +18,8 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
     private int cameraY = 0;
 
     private final ArrayList<Platform> platforms = new ArrayList<>();
+
+    private GameState state = GameState.PLAYING;
 
     public Game() {
         setPreferredSize(new Dimension(800, 600));
@@ -45,6 +47,8 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
     }
 
     private void update() {
+        if (state != GameState.PLAYING) return;
+
         if (leftPressed) player.moveLeft();
         if (rightPressed) player.moveRight();
         if (!leftPressed && !rightPressed) player.stop();
@@ -52,11 +56,13 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
         player.update();
 
         for (Platform platform : platforms) {
-                checkCollision(player, platform);
+            checkCollision(player, platform);
         }
 
         cameraX = (int) player.getX() - getWidth() / 2;
         cameraY = (int) player.getY() - getHeight() / 2;
+
+        checkGameOver();
     }
 
     @Override
@@ -81,6 +87,12 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
         if (keyCode == KeyEvent.VK_A) leftPressed = true;
         if (keyCode == KeyEvent.VK_D) rightPressed = true;
         if (keyCode == KeyEvent.VK_SPACE) player.jump();
+        if (keyCode == KeyEvent.VK_P) {
+            switch (state) {
+                case GameState.PLAYING -> state = GameState.PAUSE;
+                case GameState.PAUSE -> state = GameState.PLAYING;
+            }
+        }
     }
 
     @Override
@@ -142,6 +154,12 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
                 }
                 first.velX = 0;
             }
+        }
+    }
+
+    private void checkGameOver() {
+        if (player.getHealth() <= 0) {
+            state = GameState.GAME_OVER;
         }
     }
 }
