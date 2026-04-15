@@ -1,10 +1,11 @@
 import java.awt.*;
 import java.util.ArrayList;
 
-class Player extends PhysicsObject {
+class Player extends PhysicsObject implements Damageable {
     private final double jumpStrength = -12;
     private final double speedStrength = 4;
 
+    private int maxHealth = 100;
     private int health = 100;
 
     private final ArrayList<Color[][]> SPRITES;
@@ -12,10 +13,13 @@ class Player extends PhysicsObject {
     private int currentFrame = 0;
     private int tickFrame = 0;
 
+    private final HealthBar healthBar;
+
     public Player(double x, double y) {
         super(x, y);
         SPRITES = SpriteLoader.loadSprites("player");
         SPRITE = SPRITES.getFirst();
+        healthBar = new HealthBar(this, this);
     }
 
     private void updateAnimation() {
@@ -60,15 +64,35 @@ class Player extends PhysicsObject {
         }
     }
 
-    void damage(int damage) {
-        health -= damage;
+    @Override
+    public void draw(Graphics2D g2d) {
+        super.draw(g2d);
+        healthBar.draw(g2d);
     }
 
-    void heal(int heal) {
-        health += heal;
-    }
-
-    int getHealth() {
+    @Override
+    public int getHealth() {
         return health;
+    }
+
+    @Override
+    public void setHealth(int health) { this.health = health; }
+
+    @Override
+    public int getMaxHealth() { return maxHealth; }
+
+    @Override
+    public void setMaxHealth(int maxHealth) { this.maxHealth = maxHealth; }
+
+    @Override
+    public void damage(int damage) {
+        if (health - damage >= 0) health -= damage;
+        else health = 0;
+    }
+
+    @Override
+    public void heal(int heal) {
+        if (health + heal <= maxHealth) health += heal;
+        else health = maxHealth;
     }
 }
