@@ -43,7 +43,7 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
         hazards.add(new DamageZone(240, 460, "hazards/spike.png", 10));
         hazards.add(new DamageZone(280, 460, "hazards/spike.png", 10));
 
-        physicsDecorations.add(new PhysicsDecoration(100, 0, "barrel/barrel.png"));
+        physicsDecorations.add(new PhysicsDecoration(100, 0, "decorations/barrel.png"));
 
         Timer timer = new Timer(16, this);
         timer.setRepeats(true);
