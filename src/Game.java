@@ -18,6 +18,8 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
     private int cameraY = 0;
 
     private final ArrayList<Platform> platforms = new ArrayList<>();
+    private final ArrayList<DamageZone> hazards = new ArrayList<>();
+    private final ArrayList<PhysicsDecoration> physicsDecorations = new ArrayList<>();
 
     private GameState state = GameState.PLAYING;
 
@@ -30,10 +32,18 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
         player = new Player(100, 400);
 
         platforms.add(new Platform(0, 500, "platform/2.png"));
-        platforms.add(new Platform(300, 420, "platform/1.png"));
+        platforms.add(new Platform(500, 500, "platform/2.png"));
+        platforms.add(new Platform(100, 400, "platform/1.png"));
+        platforms.add(new Platform(300, 350, "platform/1.png"));
         platforms.add(new Platform(500, 350, "platform/1.png"));
-        platforms.add(new Platform(750, 300, "platform/1.png"));
-        platforms.add(new Platform(800, 400, "platform/1.png"));
+        platforms.add(new Platform(650, 300, "platform/1.png"));
+        platforms.add(new Platform(800, 400, "platform/3.png"));
+
+        hazards.add(new DamageZone(200, 460, "hazards/spike.png", 10));
+        hazards.add(new DamageZone(240, 460, "hazards/spike.png", 10));
+        hazards.add(new DamageZone(280, 460, "hazards/spike.png", 10));
+
+        physicsDecorations.add(new PhysicsDecoration(100, 0, "barrel/barrel.png"));
 
         Timer timer = new Timer(16, this);
         timer.setRepeats(true);
@@ -55,9 +65,30 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
 
         player.update();
 
+        for (PhysicsDecoration physicsDecoration : physicsDecorations) {
+            physicsDecoration.update();
+        }
+
+        for (DamageZone hazard : hazards) {
+            hazard.update();
+        }
+
         for (Platform platform : platforms) {
             checkCollision(player, platform);
+
+            for (PhysicsDecoration physicsDecoration : physicsDecorations) {
+                checkCollision(physicsDecoration, platform);
+                checkCollision(physicsDecoration, player);
+            }
         }
+
+        for (DamageZone hazard : hazards) {
+            hazard.checkCollision(player);
+        }
+
+//        for (PhysicsDecoration physicsDecoration : physicsDecorations) {
+//            physicsDecoration.checkCollision(player);
+//        }
 
         cameraX = (int) player.getX() - getWidth() / 2;
         cameraY = (int) player.getY() - getHeight() / 2;
@@ -77,7 +108,19 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
             platform.draw(g2d);
         }
 
+        for (GameObject hazard : hazards) {
+            hazard.draw(g2d);
+        }
+
+        for (PhysicsDecoration physicsDecoration : physicsDecorations) {
+            physicsDecoration.draw(g2d);
+        }
+
         player.draw(g2d);
+
+        if (state == GameState.GAME_OVER) {
+            drawGameOver(g2d);
+        }
     }
 
     @Override
@@ -139,13 +182,25 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
             Rectangle intersection = firstBounds.intersection(secondBounds);
 
             if (intersection.height < intersection.width) {
-                if (first.y < second.y) {
-                    first.y -= intersection.height;
-                    first.onGround = true;
+                if (first instanceof PhysicsDecoration && second instanceof Player) {
+                    if (first.y > second.y) {
+                        second.y -= intersection.height;
+                        ((Player) second).onGround = true;
+                    } else {
+                        first.y -= intersection.height;
+                        first.setVelY(0);
+                        first.onGround = true;
+                    }
+                    ((Player) second).velY = 0;
                 } else {
-                    first.y += intersection.height;
+                    if (first.y < second.y) {
+                        first.y -= intersection.height;
+                        first.onGround = true;
+                    } else {
+                        first.y += intersection.height;
+                    }
+                    first.velY = 0;
                 }
-                first.velY = 0;
             } else {
                 if (first.x < second.x) {
                     first.x -= intersection.width;
@@ -161,5 +216,18 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
         if (player.getHealth() <= 0) {
             state = GameState.GAME_OVER;
         }
+    }
+
+    private void drawGameOver(Graphics2D g2d) {
+        g2d.setColor(Color.RED);
+        g2d.setFont(new Font("Arial", Font.BOLD, 48));
+
+        String text = "GAME OVER";
+
+        FontMetrics fm = g2d.getFontMetrics();
+        int x = (800 - fm.stringWidth(text)) / 2;
+        int y = 400;
+
+        g2d.drawString(text, x, y);
     }
 }
