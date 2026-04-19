@@ -186,6 +186,8 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
                         ((Player) second).onGround = true;
                     } else {
                         first.y -= intersection.height;
+                        first.setVelY(0);
+                        first.onGround = true;
                     }
                     ((Player) second).velY = 0;
                 } else {
