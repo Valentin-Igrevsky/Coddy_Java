@@ -33,13 +33,15 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
 
         platforms.add(new Platform(0, 500, "platform/2.png"));
         platforms.add(new Platform(500, 500, "platform/2.png"));
-//        platforms.add(new Platform(100, 400, "platform/1.png"));
+        platforms.add(new Platform(100, 400, "platform/1.png"));
         platforms.add(new Platform(300, 350, "platform/1.png"));
         platforms.add(new Platform(500, 350, "platform/1.png"));
         platforms.add(new Platform(650, 300, "platform/1.png"));
         platforms.add(new Platform(800, 400, "platform/3.png"));
 
-        hazards.add(new DamageZone(200, 350, "platform/1.png", 10));
+        hazards.add(new DamageZone(200, 460, "hazards/spike.png", 10));
+        hazards.add(new DamageZone(240, 460, "hazards/spike.png", 10));
+        hazards.add(new DamageZone(280, 460, "hazards/spike.png", 10));
 
         physicsDecorations.add(new PhysicsDecoration(100, 0, "barrel/barrel.png"));
 
