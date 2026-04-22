@@ -39,11 +39,12 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
         platforms.add(new Platform(650, 300, "platform/1.png"));
         platforms.add(new Platform(800, 400, "platform/3.png"));
 
-        hazards.add(new DamageZone(200, 460, "hazards/spike.png", 10));
-        hazards.add(new DamageZone(240, 460, "hazards/spike.png", 10));
+        hazards.add(new DamageZone(200, 470, "hazards/spike.png", 10));
+        hazards.add(new DamageZone(240, 470, "hazards/spike.png", 10));
         hazards.add(new DamageZone(280, 460, "hazards/spike.png", 10));
 
-        physicsDecorations.add(new PhysicsDecoration(100, 0, "decorations/barrel.png"));
+        physicsDecorations.add(new PhysicsDecoration(100, 0, "decorations/Barrel Sprite.png"));
+        physicsDecorations.add(new PhysicsDecoration(100, -150, "decorations/Barrel Sprite.png"));
 
         Timer timer = new Timer(16, this);
         timer.setRepeats(true);
@@ -65,7 +66,7 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
 
         player.update();
 
-        for (PhysicsDecoration physicsDecoration : physicsDecorations) {
+        for (PhysicsDecoration physicsDecoration: physicsDecorations) {
             physicsDecoration.update();
         }
 
@@ -79,6 +80,12 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener 
             for (PhysicsDecoration physicsDecoration : physicsDecorations) {
                 checkCollision(physicsDecoration, platform);
                 checkCollision(physicsDecoration, player);
+
+                for (PhysicsDecoration physicsDecoration2 : physicsDecorations) {
+                    if (physicsDecoration2 != physicsDecoration) {
+                        checkCollision(physicsDecoration2, physicsDecoration);
+                    }
+                }
             }
         }
 
