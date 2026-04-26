@@ -4,13 +4,13 @@ class GameObject {
     protected double x;
     protected double y;
 
-    protected static final int PIXEL_SIZE = 4;
+    protected final static int PIXEL_SIZE = 1;
 
     protected Color[][] SPRITE;
 
     public GameObject(double x, double y) {
-        this.x = x;
-        this.y = y;
+        this.x = x*PIXEL_SIZE;
+        this.y = y*PIXEL_SIZE;
     }
 
     public double getX() {

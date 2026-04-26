@@ -4,7 +4,7 @@ class PhysicsObject extends GameObject {
 
     protected boolean onGround;
 
-    protected final double gravity = 0.5;
+    protected final double gravity = 0.1 * PIXEL_SIZE;
 
     public PhysicsObject(double x, double y) {
         super(x, y);
@@ -20,11 +20,11 @@ class PhysicsObject extends GameObject {
     }
 
     public void setVelY(double velY) {
-        this.velY = velY;
+        this.velY = velY * PIXEL_SIZE;
     }
 
     public void setVelX(double velX) {
-        this.velX = velX;
+        this.velX = velX * PIXEL_SIZE;
     }
 
     public void setOnGround(boolean onGround) {

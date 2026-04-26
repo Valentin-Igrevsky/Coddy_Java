@@ -2,8 +2,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 class Player extends PhysicsObject implements Damageable {
-    private final double jumpStrength = -12;
-    private final double speedStrength = 4;
+    private final double jumpStrength = -3;
+    private final double speedStrength = 1;
 
     private int maxHealth = 100;
     private int health = 100;
@@ -46,11 +46,11 @@ class Player extends PhysicsObject implements Damageable {
     }
 
     public void moveLeft() {
-        velX = -speedStrength;
+        setVelX(-speedStrength);
     }
 
     public void moveRight() {
-        velX = speedStrength;
+        setVelX(speedStrength);
     }
 
     public void stop() {
@@ -59,8 +59,8 @@ class Player extends PhysicsObject implements Damageable {
 
     public void jump() {
         if (onGround) {
-            velY = jumpStrength;
-            onGround = false;
+            setVelY(jumpStrength);
+            setOnGround(false);
         }
     }
 

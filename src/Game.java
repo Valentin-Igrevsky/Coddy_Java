@@ -16,6 +16,7 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
     // Временное решения дял удобного размещения предметов
     private int mouseX = 0;
     private int mouseY = 0;
+    private final int gridSize;
     private boolean placementMode = false;
     private ArrayList<PlacementTool> tools = new ArrayList<>();
     private int currentToolIndex = 0;
@@ -23,8 +24,9 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
 
     private BufferedImage background;
 
+    private Level currentLevel;
+    private int currentLevelIndex = 1;
     private final Player player;
-//    private final KillZone killZone;
 
     private boolean leftPressed = false;
     private boolean rightPressed = false;
@@ -32,48 +34,36 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
     private int cameraX = 0;
     private int cameraY = 0;
 
-    private ArrayList<Platform> platforms = new ArrayList<>();
-    private ArrayList<DamageZone> hazards = new ArrayList<>();
-    private ArrayList<PhysicsDecoration> physicsDecorations = new ArrayList<>();
-    private ArrayList<Decoration> decorations = new ArrayList<>();
+    private ArrayList<Platform> platforms;
+    private ArrayList<DamageZone> hazards;
+    private ArrayList<PhysicsDecoration> physicsDecorations;
+    private ArrayList<Decoration> decorations;
+    private ArrayList<Trigger> triggers;
 
     private GameState state = GameState.PLAYING;
 
     public Game() {
-//        try {
-//            background = javax.imageio.ImageIO.read(
-//                    getClass().getResource("/background/background.png")
-//            );
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        ImageIcon icon = new ImageIcon(getClass().getResource("/background/background.png"));
-//
-//        int width = icon.getIconWidth();
-//        int height = icon.getIconHeight();
-//        setPreferredSize(new Dimension(width, height));
-        setPreferredSize(new Dimension(800, 600));
-        setBackground(new Color(225, 149, 48));
+        try {
+            background = javax.imageio.ImageIO.read(
+                    getClass().getResource("/background/background.png")
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        int width = background.getWidth();
+        int height = background.getHeight();
+        setPreferredSize(new Dimension(width, height));
+
         setFocusable(true);
         addKeyListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
 
-        player = new Player(100, 400);
-        platforms.add(new Platform(0, 500, "platform/2.png"));
-//        killZone = new KillZone(-400, 650, 2000, 10);
+        gridSize = GameObject.PIXEL_SIZE;
 
-        platforms.add(new Platform(523, 356, "platform/1.png"));
-        physicsDecorations.add(new PhysicsDecoration(541, 285, "physical_decorations/Barrel Sprite.png"));
-        physicsDecorations.add(new PhysicsDecoration(629, 386, "physical_decorations/barrel.png"));
-        decorations.add(new Decoration(276, 382, "decorations/rocks.png"));
-        hazards.add(new DamageZone(187, 462, "hazards/spike.png", 10));
-        hazards.add(new DamageZone(220, 462, "hazards/spike.png", 10));
-        hazards.add(new DamageZone(143, 467, "hazards/spike.png", 10));
-        hazards.add(new DamageZone(682, 492, "hazards/lava.png", 50));
-        platforms.add(new Platform(681, 543, "platform/2.png"));
-        platforms.add(new Platform(863, 435, "platform/1.png"));
+        player = new Player(0, 0);
+        loadLevel(currentLevelIndex);
 
         initTools();
 
@@ -95,7 +85,7 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
         if (rightPressed) player.moveRight();
         if (!leftPressed && !rightPressed) player.stop();
 
-        player.update();
+        if (!placementMode) player.update();
 
         for (PhysicsDecoration physicsDecoration : physicsDecorations) {
             physicsDecoration.update();
@@ -106,11 +96,11 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
         }
 
         for (Platform platform : platforms) {
-            checkCollision(player, platform);
+            if (!placementMode) checkCollision(player, platform);
 
             for (PhysicsDecoration physicsDecoration : physicsDecorations) {
                 checkCollision(physicsDecoration, platform);
-                checkCollision(physicsDecoration, player);
+                if (!placementMode) checkCollision(physicsDecoration, player);
 
                 for (PhysicsDecoration physicsDecoration2 : physicsDecorations) {
                     if (physicsDecoration2 != physicsDecoration) {
@@ -121,10 +111,14 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
         }
 
         for (DamageZone hazard : hazards) {
-            hazard.checkCollision(player);
+            if (!placementMode) hazard.checkCollision(player);
         }
 
-//        killZone.checkCollision(player);
+        for (Trigger trigger : triggers) {
+            if (player.getBounds().intersects(((GameObject) trigger).getBounds())) {
+                if (!placementMode) trigger.activate(player, this);
+            }
+        }
 
         cameraX = (int) player.getX() - getWidth() / 2;
         cameraY = (int) player.getY() - getHeight() / 2;
@@ -137,7 +131,13 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-//        g2d.drawImage(background, 0, 0, getWidth(), getHeight(), null);
+        // Временное решения для удобного размещения предмето
+        if (placementMode) {
+            drawGrid(g2d);
+        } else {
+            g2d.drawImage(background, 0, 0, getWidth(), getHeight(), null);
+        }
+        // Временное решения для удобного размещения предмето
 
         g2d.translate(-cameraX, -cameraY);
 
@@ -158,7 +158,11 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
             hazard.draw(g2d);
         }
 
-//        killZone.draw(g2d);
+        if (placementMode) {
+            for (Trigger trigger : triggers) {
+                ((GameObject) trigger).draw(g2d);
+            }
+        }
 
         player.draw(g2d);
 
@@ -166,14 +170,14 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
             drawGameOver(g2d);
         }
 
-        // Временное решения для удобного размещения предметов
+        // Временное решения для удобного размещения предмето
         PlacementTool tool = getCurrentTool();
 
         if (placementMode && tool != null) {
             g2d = (Graphics2D) g.create();
 
-            int worldX = mouseX + cameraX;
-            int worldY = mouseY + cameraY;
+            int worldX = (mouseX + cameraX)/gridSize;
+            int worldY = (mouseY + cameraY)/gridSize;
 
             GameObject preview = tool.factory.apply(worldX, worldY);
 
@@ -189,9 +193,19 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
 
-        if (keyCode == KeyEvent.VK_A) leftPressed = true;
-        if (keyCode == KeyEvent.VK_D) rightPressed = true;
-        if (keyCode == KeyEvent.VK_SPACE) player.jump();
+        if (placementMode) {
+            switch (keyCode) {
+                case KeyEvent.VK_A -> player.setX(player.getX() - gridSize);
+                case KeyEvent.VK_D -> player.setX(player.getX() + gridSize);
+                case KeyEvent.VK_S -> player.setY(player.getY() + gridSize);
+                case KeyEvent.VK_W -> player.setY(player.getY() - gridSize);
+            }
+        } else {
+            if (keyCode == KeyEvent.VK_A) leftPressed = true;
+            if (keyCode == KeyEvent.VK_D) rightPressed = true;
+            if (keyCode == KeyEvent.VK_SPACE) player.jump();
+        }
+
         if (keyCode == KeyEvent.VK_P) {
             switch (state) {
                 case GameState.PLAYING -> state = GameState.PAUSE;
@@ -236,8 +250,8 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
         PlacementTool tool = getCurrentTool();
         if (!placementMode || tool == null) return;
 
-        int worldX = mouseX + cameraX;
-        int worldY = mouseY + cameraY;
+        int worldX = (mouseX + cameraX)/gridSize;
+        int worldY = (mouseY + cameraY)/gridSize;
 
         System.out.printf(tool.pattern, worldX, worldY);
 
@@ -348,28 +362,28 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
                     case "platform" -> tools.add(new PlacementTool(
                             (x, y) -> new Platform(x, y, path),
                             obj -> platforms.add((Platform) obj),
-                            String.format("platforms.add(new Platform(%%s, %%s, \"%s\"));\n", path),
+                            String.format("level.platforms.add(new Platform(%%s, %%s, \"%s\"));\n", path),
                             file.getName()
                     ));
 
                     case "hazards" -> tools.add(new PlacementTool(
                             (x, y) -> new DamageZone(x, y, path, 10),
                             obj -> hazards.add((DamageZone) obj),
-                            String.format("hazards.add(new DamageZone(%%s, %%s, \"%s\", 50));\n", path),
+                            String.format("level.hazards.add(new DamageZone(%%s, %%s, \"%s\", 50));\n", path),
                             file.getName()
                     ));
 
                     case "physical_decorations" -> tools.add(new PlacementTool(
                             (x, y) -> new PhysicsDecoration(x, y, path),
                             obj -> physicsDecorations.add((PhysicsDecoration) obj),
-                            String.format("physicsDecorations.add(new PhysicsDecoration(%%s, %%s, \"%s\"));\n", path),
+                            String.format("level.physicsDecorations.add(new PhysicsDecoration(%%s, %%s, \"%s\"));\n", path),
                             file.getName()
                     ));
 
                     case "decorations" -> tools.add(new PlacementTool(
                             (x, y) -> new Decoration(x, y, path),
                             obj -> decorations.add((Decoration) obj),
-                            String.format("decorations.add(new Decoration(%%s, %%s, \"%s\"));\n", path),
+                            String.format("level.decorations.add(new Decoration(%%s, %%s, \"%s\"));\n", path),
                             file.getName()
                     ));
                 }
@@ -379,16 +393,85 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
         }
     }
 
+    private void loadTriggerTools() {
+        tools.add(new PlacementTool(
+                (x, y) -> new KillZone(x, y, 50, 10),
+                obj -> triggers.add((Trigger) obj),
+                "level.triggers.add(new KillZone(%s, %s, 50, 10));\n",
+                "KillZone"
+        ));
+
+        tools.add(new PlacementTool(
+                (x, y) -> new LevelExit(x, y, 10, 10),
+                obj -> triggers.add((Trigger) obj),
+                "level.triggers.add(new LevelExit(%s, %s, 10, 10));\n",
+                "LevelExit"
+        ));
+    }
+
+
     private void initTools() {
         loadToolsFromFolder("platform", "platform");
         loadToolsFromFolder("hazards", "hazards");
         loadToolsFromFolder("physical_decorations", "physical_decorations");
         loadToolsFromFolder("decorations", "decorations");
+        loadTriggerTools();
     }
 
     private PlacementTool getCurrentTool() {
         if (tools.isEmpty()) return null;
         return tools.get(currentToolIndex);
     }
+
+    private void drawGrid(Graphics2D g2d) {
+        g2d.setColor(new Color(0, 0, 0, 40));
+
+        int width = getWidth();
+        int height = getHeight();
+
+        int startX = cameraX;
+        int startY = cameraY;
+
+        int endX = cameraX + width;
+        int endY = cameraY + height;
+
+        startX = (startX / gridSize) * gridSize;
+        startY = (startY / gridSize) * gridSize;
+
+        // вертикальные линии
+        for (int x = startX; x <= endX; x += gridSize) {
+            int screenX = x - cameraX;
+            g2d.drawLine(screenX, 0, screenX, height);
+        }
+
+        // горизонтальные линии
+        for (int y = startY; y <= endY; y += gridSize) {
+            int screenY = y - cameraY;
+            g2d.drawLine(0, screenY, width, screenY);
+        }
+    }
     // Временное решения для удобного размещения предметов
+
+
+
+    public void loadLevel(int id) {
+        currentLevel = LevelLoader.load(id);
+
+        player.setX(0);
+        player.setY(0);
+
+        platforms = currentLevel.platforms;
+        hazards = currentLevel.hazards;
+        physicsDecorations = currentLevel.physicsDecorations;
+        decorations = currentLevel.decorations;
+        triggers = currentLevel.triggers;
+
+        cameraX = 0;
+        cameraY = 0;
+    }
+
+    public void nextLevel() {
+        currentLevelIndex += 1;
+        loadLevel(currentLevelIndex);
+    }
 }
