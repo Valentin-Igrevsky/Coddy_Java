@@ -34,7 +34,6 @@ public class InvisibleObject extends GameObject {
         );
 
         g.setStroke(dashed);
-        g.setColor(Color.RED);
         g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 
         g.setStroke(oldStroke);

@@ -4,7 +4,7 @@ class GameObject {
     protected double x;
     protected double y;
 
-    protected final static int PIXEL_SIZE = 1;
+    protected final static int PIXEL_SIZE = 4;
 
     protected Color[][] SPRITE;
 

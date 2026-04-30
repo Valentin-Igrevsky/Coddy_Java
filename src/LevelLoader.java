@@ -3,7 +3,9 @@ class LevelLoader {
         Level level = new Level();
 
         switch (id) {
-            case 0 -> level.platforms.add(new Platform(0, 15, "platform/2.png"));
+            case 0 -> {
+                level.platforms.add(new Platform(0, 15, "platform/2.png"));
+            }
             case 1 -> {
                 level.platforms.add(new Platform(0, 15, "platform/2.png"));
                 level.platforms.add(new Platform(177, -53, "platform/1.png"));
@@ -39,6 +41,7 @@ class LevelLoader {
                 level.hazards.add(new DamageZone(532, 48, "hazards/lava.png", 50));
                 level.hazards.add(new DamageZone(266, 48, "hazards/lava.png", 50));
                 level.triggers.add(new KillZone(-266, 62, 931, 10));
+                level.triggers.add(new WinTrigger(52, -47, 10, 10));
             }
 
             case 2 -> {

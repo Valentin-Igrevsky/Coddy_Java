@@ -166,9 +166,13 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
 
         player.draw(g2d);
 
-        if (state == GameState.GAME_OVER) {
-            drawGameOver(g2d);
+        switch (state) {
+            case GameState.GAME_OVER -> drawText(g2d, "Игра окончена");
+            case GameState.PAUSE -> drawText(g2d, "Пауза");
+            case GameState.WIN -> drawText(g2d, "Победа");
         }
+        
+
 
         // Временное решения для удобного размещения предмето
         PlacementTool tool = getCurrentTool();
@@ -328,13 +332,11 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
         }
     }
 
-    private void drawGameOver(Graphics2D g2d) {
+    private void drawText(Graphics2D g2d, String text) {
         g2d.translate(cameraX, cameraY);
 
         g2d.setColor(Color.RED);
         g2d.setFont(new Font("Arial", Font.BOLD, 48));
-
-        String text = "GAME OVER";
 
         FontMetrics fm = g2d.getFontMetrics();
 
@@ -407,6 +409,13 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
                 "level.triggers.add(new LevelExit(%s, %s, 10, 10));\n",
                 "LevelExit"
         ));
+
+        tools.add(new PlacementTool(
+                (x, y) -> new WinTrigger(x,y,10,10),
+                obj -> triggers.add((WinTrigger) obj),
+                "level.triggers.add(new WinTrigger(%s, %s, 10, 10));\n",
+                "WinTrigger"
+        ));
     }
 
 
@@ -473,5 +482,9 @@ class Game extends JPanel implements KeyListener, ActionListener, MouseListener,
     public void nextLevel() {
         currentLevelIndex += 1;
         loadLevel(currentLevelIndex);
+    }
+
+    public void win() {
+        state = GameState.WIN;
     }
 }

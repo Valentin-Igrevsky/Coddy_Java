@@ -1,3 +1,5 @@
+import java.awt.*;
+
 public class KillZone extends InvisibleObject implements Trigger {
     public KillZone(double x, double y,int width, int height) {
         super(x, y, width, height);
@@ -8,5 +10,11 @@ public class KillZone extends InvisibleObject implements Trigger {
         if (obj instanceof Damageable target) {
             target.damage(100000);
         }
+    }
+
+    @Override
+    public void draw(Graphics2D g) {
+        g.setColor(Color.RED);
+        super.draw(g);
     }
 }

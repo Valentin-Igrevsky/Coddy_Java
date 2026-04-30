@@ -4,5 +4,3 @@ class PhysicsDecoration extends PhysicsObject {
         this.SPRITE = SpriteLoader.loadSprite(spritePath);
     }
 }
-
-
